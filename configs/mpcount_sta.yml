@@ -1,0 +1,54 @@
+strategy: ddp
+benchmark: True
+sync_batchnorm: False
+clip_grad: null
+precision: 16
+epochs: 120
+log_para: 1000
+patch_size: 12800
+# --------------------------------------
+# Dataset parameters
+# --------------------------------------
+dataset_name: mpcount
+train_data_dir: data/sta
+val_data_dir: data/sta
+test_data_dir: data/stb
+train_split: train
+val_split: val
+test_split: test
+crop_size: [320, 320]
+downsample_factor: 1
+unit_size: 16
+# --------------------------------------
+# Optimizer parameters
+# --------------------------------------
+optim_name: adamw
+lr: 1.0e-3
+weight_decay: 0.00001
+momentum: 0.9
+# --------------------------------------
+# Learning rate scheduler parameters
+# --------------------------------------
+sched_name: cosine
+warmup_lr: 1.0e-6
+min_lr: 1.0e-6
+warmup_epochs: 20
+# --------------------------------------
+# Model parameters
+# --------------------------------------
+model_name: mpcount
+pretrained: true
+mem_size: 1024
+mem_dim: 256
+cls_thrs: 0.5
+err_thrs: 0.5
+den_drop: 0.5
+cls_drop: 0.3
+mem_drop: 0.5
+deterministic: true
+acl_type: mse
+# --------------------------------------
+# Loss parameters
+# --------------------------------------
+w_acl: 10.0
+w_cls: 10.0

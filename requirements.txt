@@ -1,0 +1,18 @@
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.5.1
+torchvision==0.20.1
+diffusers[torch]
+xformers
+sentencepiece
+lightning
+lightning-bolts
+numpy
+rich
+einops
+matplotlib
+glob2
+pyyaml
+scipy
+tqdm
+opencv-python
+pandas
