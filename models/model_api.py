@@ -55,7 +55,7 @@ def create_scheduler(hparams, optimizer):
                 min_lr=hparams.min_lr)
     elif hparams.sched_name == 'onecycle':
         return sched.OneCycleLR(optimizer, max_lr=hparams.lr, epochs=hparams.epochs, steps_per_epoch=hparams.steps_per_epoch,
-                pct_start=hparams.pct_start, final_div_factor=hparams.final_div_factor)
+                pct_start=hparams.pct_start, final_div_factor=hparams.final_div_factor, three_phase=hparams.three_phase)
     else:
         raise NotImplementedError
     
@@ -162,7 +162,7 @@ class LitModel(pl.LightningModule):
 
         return count, res
     
-    def _visualize(self, batch, res):
+    def _visualize(self, batch, res, save=False):
         if self.hparams.model_name.lower() in ['mpcount_extend', 'mpcount']:
             img = denormalize(batch['img'])[0].detach().cpu().permute(1, 2, 0).numpy()
             img_aug = denormalize(batch['img_aug'])[0].detach().cpu().permute(1, 2, 0).numpy()
@@ -196,8 +196,13 @@ class LitModel(pl.LightningModule):
                 ax.axis('off')
             plt.tight_layout()
 
+            if save:
+                save_dir = os.path.join(self.logger.log_dir, 'vis')
+                os.makedirs(save_dir, exist_ok=True)
+                fig.savefig(os.path.join(save_dir, f'{name}.png'))
             tensorboard = self.logger.experiment
             tensorboard.add_figure('vis', fig, global_step=self.global_step)
+
             plt.close(fig)
             plt.clf()
         else:
@@ -237,11 +242,8 @@ class LitModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         count_gt = batch['count']
 
-        if batch_idx == 0:
-            count, res = self._evaluate_and_generate_maps(batch)
-            self._visualize(batch, res)
-        else:
-            count = self._evaluate(batch)
+        count, res = self._evaluate_and_generate_maps(batch)
+        self._visualize(batch, res, save=True)
 
         mae, mse = compute_metrics(count, count_gt)
         self.log_dict({'test_mae': mae, 'test_mse': mse}, sync_dist=True, on_epoch=True)

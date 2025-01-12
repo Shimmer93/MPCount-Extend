@@ -28,7 +28,7 @@ def main(args):
             monitor='val_mae',
             dirpath=os.path.join('logs', args.exp_name, args.version),
             filename=args.model_name+'-{epoch}-{val_mae:.2f}',
-            save_top_k=1,
+            save_top_k=3,
             save_last=True,
             mode='min'),
         RichProgressBar(refresh_rate=5),
