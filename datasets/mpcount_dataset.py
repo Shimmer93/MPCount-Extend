@@ -85,14 +85,12 @@ class MPCountDataset(DensityMapDataset):
     def get_val_transforms(hparams):
         img_transforms_wrapper1 = ImageTransformWrapper(
             T.Compose([
-            T.RandomApply([T.Grayscale(num_output_channels=3)], p=0.1),
             T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]),
             img_keys = ['img']
         )
         img_transforms_wrapper1.lock_keys()
         img_transforms_wrapper2 = ImageTransformWrapper(
             T.Compose([
-            T.RandomApply([T.Grayscale(num_output_channels=3)], p=0.1),
             T.RandomApply([T.ColorJitter(brightness=0.5, contrast=0.2, saturation=0.2, hue=0.1)], p=0.8),
             T.RandomApply([T.GaussianBlur(kernel_size=3, sigma=1)], p=0.5),
             T.RandomAdjustSharpness(sharpness_factor=5, p=0.5),

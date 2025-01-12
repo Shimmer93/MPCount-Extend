@@ -12,17 +12,17 @@ from models.utils import ConvBlock, Upsample, upsample_nearest, VGGMSEncoder, \
 
 class MPCountExtend(nn.Module):
     def __init__(self, pretrained=True, mem_size=1024, mem_dim=256, cls_thrs=0.5, \
-                 err_thrs=0.5, den_drop=0.5, cls_drop=0.5, mem_drop=0.5, deterministic=True, acl_type='mse'):
+                 err_thrs=0.5, den_drop=0.5, cls_drop=0.5, deterministic=True, acl_type='mse'):
         super().__init__()
 
         self.cls_thrs = cls_thrs
         self.err_thrs = err_thrs
-        self.mem_drop = mem_drop
+        self.den_drop = den_drop
         self.acl_type = acl_type
 
         self.enc = VGGMSEncoder(pretrained)
         self.dec = MSDecoder(deterministic)
-        self.agg = MSAggregator(mem_dim, den_drop, deterministic)
+        self.agg = MSAggregator(mem_dim, deterministic)
         self.amb = AttentionMemoryBank(mem_size, mem_dim)
 
         self.cls_head = nn.Sequential(
@@ -65,8 +65,8 @@ class MPCountExtend(nn.Module):
         y2_in = F.instance_norm(y2, eps=1e-5)
         e = torch.abs(y1_in - y2_in)
         e_mask = (e < self.err_thrs).clone().detach()
-        y1 = F.dropout2d(y1 * e_mask, self.mem_drop)
-        y2 = F.dropout2d(y2 * e_mask, self.mem_drop)
+        y1 = F.dropout2d(y1 * e_mask, self.den_drop)
+        y2 = F.dropout2d(y2 * e_mask, self.den_drop)
 
         e_mask_pred1 = self.err_head(y1)
         e_mask_pred2 = self.err_head(y2)

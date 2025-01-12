@@ -23,12 +23,12 @@ from utils.misc import divide_img_into_patches, denormalize
 def create_model(hparams):
     if hparams.model_name.lower() == 'mpcount':
         model = MPCount(pretrained=hparams.pretrained, mem_size=hparams.mem_size, mem_dim=hparams.mem_dim, cls_thrs=hparams.cls_thrs,
-                        err_thrs=hparams.err_thrs, den_drop=hparams.den_drop, cls_drop=hparams.cls_drop, mem_drop=hparams.mem_drop,
-                        deterministic=hparams.deterministic, acl_type=hparams.acl_type)
+                    err_thrs=hparams.err_thrs, den_drop=hparams.den_drop, cls_drop=hparams.cls_drop, deterministic=hparams.deterministic, 
+                    acl_type=hparams.acl_type)
     elif hparams.model_name.lower() == 'mpcount_extend':
         model = MPCountExtend(pretrained=hparams.pretrained, mem_size=hparams.mem_size, mem_dim=hparams.mem_dim, cls_thrs=hparams.cls_thrs,
-                              err_thrs=hparams.err_thrs, den_drop=hparams.den_drop, cls_drop=hparams.cls_drop, mem_drop=hparams.mem_drop,
-                              deterministic=hparams.deterministic, acl_type=hparams.acl_type)
+                    err_thrs=hparams.err_thrs, den_drop=hparams.den_drop, cls_drop=hparams.cls_drop, deterministic=hparams.deterministic, 
+                    acl_type=hparams.acl_type)
     else:
         raise ValueError(f'Unknown model name: {hparams.model_name}')
     

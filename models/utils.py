@@ -110,12 +110,9 @@ class MSDecoder(nn.Module):
         return y1, y2, y3
     
 class MSAggregator(nn.Module):
-    def __init__(self, dim_out, dropout, deterministic=True):
+    def __init__(self, dim_out, deterministic=True):
         super().__init__()
-        self.agg = nn.Sequential(
-            ConvBlock(512+256+128, dim_out, kernel_size=1, padding=0, bn=True),
-            nn.Dropout2d(p=dropout)
-        )
+        self.agg = ConvBlock(512+256+128, dim_out, kernel_size=1, padding=0, bn=True)
 
         self.up1 = Upsample(256, 2, deterministic)
         self.up2 = Upsample(512, 4, deterministic)
