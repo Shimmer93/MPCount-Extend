@@ -54,7 +54,7 @@ def create_scheduler(hparams, optimizer):
         return sched.ReduceLROnPlateau(optimizer, patience=hparams.patience, factor=hparams.factor, 
                 min_lr=hparams.min_lr)
     elif hparams.sched_name == 'onecycle':
-        return sched.OneCycleLR(optimizer, max_lr=hparams.lr, epochs=hparams.epochs, steps_per_epoch=hparams.steps_per_epoch,
+        return sched.OneCycleLR(optimizer, max_lr=hparams.lr, epochs=hparams.onecycle_epochs, steps_per_epoch=hparams.steps_per_epoch,
                 pct_start=hparams.pct_start, final_div_factor=hparams.final_div_factor, three_phase=hparams.three_phase)
     else:
         raise NotImplementedError
@@ -242,8 +242,14 @@ class LitModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         count_gt = batch['count']
 
-        count, res = self._evaluate_and_generate_maps(batch)
-        self._visualize(batch, res, save=True)
+        if self.hparams.test_vis:
+            count, res = self._evaluate_and_generate_maps(batch)
+            self._visualize(batch, res, save=True)
+        elif batch_idx == 0:
+            count, res = self._evaluate_and_generate_maps(batch)
+            self._visualize(batch, res)
+        else:
+            count = self._evaluate(batch)
 
         mae, mse = compute_metrics(count, count_gt)
         self.log_dict({'test_mae': mae, 'test_mse': mse}, sync_dist=True, on_epoch=True)

@@ -153,8 +153,8 @@ def attn_consist_loss(logits1, logits2, type='mse'):
     elif type == 'jsd':
         p = F.softmax(logits1, dim=1)
         q = F.softmax(logits2, dim=1)
-        m = 0.5 * (p + q)
-        return 0.5 * F.kl_div(F.log_softmax(p, dim=1), m) + 0.5 * F.kl_div(F.log_softmax(q, dim=1), m)
+        m = (0.5 * (p + q)).detach()
+        return 0.5 * F.kl_div(F.log_softmax(logits1, dim=1), m) + 0.5 * F.kl_div(F.log_softmax(logits2, dim=1), m)
     elif type == 'cos':
         return 1 - F.cosine_similarity(logits1, logits2, dim=1)
     else:
